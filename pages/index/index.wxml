@@ -1,0 +1,27 @@
+<view wx:if="{{scrollTopNew + navT+navH >= stickyTopHeight}}" style="width: 100%;height: {{navT+navH}}px;background: #fff;position: fixed;z-index: 999;top: 0;display: flex;justify-content: center;">
+  <text style="margin-top: {{navT}}px;line-height: {{navH}}px;">产品详情</text>
+</view>
+
+<!-- 占位 -->
+<view class="top-main"></view>
+
+<view class="tabs" id="tabs" style="{{oneFixed}}">
+  <block wx:for="{{list}}" wx:key="index">
+    <view id="{{index}}" bindtap="tabChange" class="tab-item tab-item-{{index}} {{ index== currentIndex ? 'active' : ''}}" data-index="{{index}}" data-key="{{ item.key }}">
+      {{item.title}}
+    </view>
+  </block>
+</view>
+
+  <view class="indexConDecOut" id="cont0">
+  产品
+  </view>
+  <view class="indexConDecOut" id="cont1">
+  团期
+  </view>
+  <view class="indexConDecOut" id="cont2">
+  行程
+  </view>
+  <view class="indexConDecOut" id="cont3">
+  费用
+  </view>
