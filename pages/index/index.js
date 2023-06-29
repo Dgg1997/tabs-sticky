@@ -1,4 +1,5 @@
 const app = getApp();
+const utils = require('../../utils/util')
 Page({
   data: {
     scrollTopNew: 0,  //滚动距离
@@ -24,7 +25,6 @@ Page({
       },
     ],
     currentIndex: 0, //当前选中tabs
-    heightArr:[], //保存tabs对应内容距离顶部tabs
   },
   tabChange(e) {
     let selector = '#cont' + e.currentTarget.dataset.index
@@ -32,7 +32,7 @@ Page({
     wx.pageScrollTo({
       offsetTop: -offsetTop,
       selector: selector,
-      duration: 400,
+      duration: 0,
       success:function(e){
         console.log("成功",e)
       },
@@ -65,7 +65,8 @@ Page({
     })
   },
 
-  onPageScroll(event) {
+  onPageScroll: utils.throttle(function (res) {
+    let event = res[0]
     let that = this
     let scrollTopNew = event.scrollTop;
     
@@ -92,48 +93,31 @@ Page({
       })
     }
 
-    
-    let heightArr = [...new Set(this.data.heightArr)]
-    let top = scrollTopNew + height
-    if(heightArr[0] > top){
-      that.setData({
-        currentIndex: 0
-      })
-    }else if(heightArr[1] > top){
-      that.setData({
-        currentIndex: 1
-      })
-    }else if(heightArr[2] > top){
-      that.setData({
-        currentIndex: 2
-      })
-    }else if(heightArr[3] > top){
-      that.setData({
-        currentIndex: 3
-      })
-    }
-  },
 
-  getConts(){
-    let that = this
-    var query = wx.createSelectorQuery();
-    query.select('#cont0').boundingClientRect();
-    query.select('#cont1').boundingClientRect();
-    query.select('#cont2').boundingClientRect();
-    query.select('#cont3').boundingClientRect();
+    const query = wx.createSelectorQuery()
+    for (let item of that.data.list) {
+      query.select('#cont' + item.id).boundingClientRect()
+    }
+
     query.exec(function (rect) {
-      console.log(rect)
-      let arr = [rect[0].top,rect[1].top,rect[2].top,rect[3].top]
+      let currentIndex = 0
+      for (let i in rect) {
+        if (rect[i].top <= (height + 50)) {
+          currentIndex = i
+        } else {
+          break;
+        }
+      }
       that.setData({
-        heightArr:arr
+        currentIndex
       })
     })
-  },
+  }, 100),
+
   onLoad(optons) {
     let that = this
     that.getNav()
     that.getTopStickyHeight()
-    that.getConts()
   },
   onShow() {
 
